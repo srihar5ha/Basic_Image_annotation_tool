@@ -1,0 +1,123 @@
+
+
+<h2>Annotations</h2>
+<div id="annotation-container"></div>
+
+<button id="save-btn">Save Annotations</button>
+
+<script>
+    const images = [];
+    const annotations = {};
+
+    function handleImageSelect(event) {
+        const input = event.target;
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                images.push(reader.result);
+                showImages();
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function showImages() {
+        const imageContainer = document.getElementById("image-container");
+        imageContainer.innerHTML = "";
+        images.forEach(image => {
+            const imageDiv = document.createElement("div");
+            imageDiv.classList.add("image-div");
+            const img = document.createElement("img");
+            img.src = image;
+            img.style.maxWidth = "100%";
+            img.style.maxHeight = "100%";
+            imageDiv.appendChild(img);
+            imageContainer.appendChild(imageDiv);
+        });
+    }
+
+    function showAnnotations() {
+        const annotationContainer = document.getElementById("annotation-container");
+        annotationContainer.innerHTML = "";
+        images.forEach((image, index) => {
+            const annotationDiv = document.createElement("div");
+            annotationDiv.classList.add("annotation-div");
+            const img = document.createElement("img");
+            img.src = image;
+            img.style.maxWidth = "100%";
+            img.style.maxHeight = "100%";
+            annotationDiv.appendChild(img);
+            annotationContainer.appendChild(annotationDiv);
+
+            const canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            annotationDiv.appendChild(canvas);
+
+            const context = canvas.getContext("2d");
+
+            if (annotations[index]) {
+                annotations[index].forEach(annotation => {
+                    context.beginPath();
+                    context.rect(annotation.x1, annotation.y1, annotation.x2 - annotation.x1, annotation.y2 - annotation.y1);
+                    context.lineWidth = 2;
+                    context.strokeStyle = "#ff0000";
+                    context.stroke();
+
+                    const label = document.createElement("div");
+                    label.classList.add("annotation-label");
+                    label.style.left = `${annotation.x1}px`;
+                    label.style.top = `${annotation.y1}px`;
+                    label.innerHTML = annotation.label;
+                    annotationDiv.appendChild(label);
+                });
+            }
+
+            canvas.addEventListener("mousedown", handleAnnotationStart);
+
+            function handleAnnotationStart(event) {
+                canvas.removeEventListener("mousedown", handleAnnotationStart);
+
+                const x1 = event.offsetX;
+                const y1 = event.offsetY;
+
+                canvas.addEventListener("mouseup", handleAnnotationEnd);
+
+                function handleAnnotationEnd(event) {
+                    canvas.removeEventListener("mouseup", handleAnnotationEnd);
+
+                    const x2 = event.offsetX;
+                    const y2 = event.offsetY;
+
+                    const label = prompt("Enter a label for this annotation:");
+
+                    if (label) {
+                        const annotation = { x1, y1, x2, y2, label };
+                        if (!annotations[index]) {
+                            annotations[index] = [annotation];
+                        } else {
+                            annotations[index].push(annotation);
+                        }
+
+                        context.beginPath();
+                        context.rect(x1, y1, x2 - x1, y2 - y1);
+                        context.lineWidth = 2;
+                        context.strokeStyle = "#ff0000";
+                        context.stroke();
+
+                        const labelDiv = document.createElement("div");
+                        labelDiv.classList.add("annotation-label");
+                        labelDiv.style.left = `${x1}px`;
+                        labelDiv.style.top = `${y1}px`;
+                        labelDiv.innerHTML = label;
+                        annotationDiv.appendChild(labelDiv);
+                    }
+
+                    canvas.addEventListener("mousedown", handleAnnotationStart);
+                }
+            }
+        });
+    }
+
+    showImages();
+   

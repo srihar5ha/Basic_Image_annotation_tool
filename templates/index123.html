@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Canvas Box Drawing</title>
+    <style>
+      canvas {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <img id="image" src="../static/image.jpg" style="display: none;">
+    <canvas id="canvas" width="400" height="400"></canvas>
+    <br>
+    <button id="enable-drawing">Enable Drawing</button>
+    <button id="reset-canvas">Reset Canvas</button>
+    <br>
+    <label for="label-input">Label:</label>
+    <input type="text" id="label-input">
+    <script>
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = document.getElementById('image');
+
+      img.addEventListener('load', function() {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+      });
+
+      const box = {
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0
+      };
+
+      let isDrawing = false;
+
+      function drawBox() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        ctx.rect(box.x, box.y, box.width, box.height);
+        ctx.stroke();
+      }
+
+      function enableDrawing() {
+        canvas.addEventListener('mousedown', handleMouseDown);
+        canvas.addEventListener('mousemove', handleMouseMove);
+        canvas.addEventListener('mouseup', handleMouseUp);
+      }
+
+      function resetCanvas() {
+        canvas.removeEventListener('mousedown', handleMouseDown);
+        canvas.removeEventListener('mousemove', handleMouseMove);
+        canvas.removeEventListener('mouseup', handleMouseUp);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+      }
+
+      function handleMouseDown(event) {
+        isDrawing = true;
+        box.x = event.offsetX;
+        box.y = event.offsetY;
+      }
+
+      function handleMouseMove(event) {
+        if (!isDrawing) return;
+        box.width = event.offsetX - box.x;
+        box.height = event.offsetY - box.y;
+        drawBox();
+      }
+
+      function handleMouseUp(event) {
+        isDrawing = false;
+        if (box.width !== 0 && box.height !== 0) {
+          const rect = {
+            x1: box.x,
+            y1: box.y,
+            x2: box.x + box.width,
+            y2: box.y + box.height,
+            label: labelInput.value
+          };
+          console.log(rect);
+          canvas.removeEventListener('mousedown', handleMouseDown);
+          canvas.removeEventListener('mousemove', handleMouseMove);
+          canvas.removeEventListener('mouseup', handleMouseUp);
+        }
+      }
+
+      const enableDrawingButton = document.getElementById('enable-drawing');
+      enableDrawingButton.addEventListener('click', enableDrawing);
+
+      const resetCanvasButton = document.getElementById('reset-canvas');
+      resetCanvasButton.addEventListener('click', resetCanvas);
+
+      const labelInput = document.getElementById('label-input');
+    </script>
+  </body>
+</html>

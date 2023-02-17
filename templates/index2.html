@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Drawing Bounding Boxes on Images</title>
+    <style>
+      body {
+        background-color: #f5f5f5;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      h1 {
+        font-size: 24px;
+        text-align: center;
+        color: #008080;
+        margin-top: 40px;
+      }
+      .canvas-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        margin-bottom: 20px;
+      }
+      #canvas {
+        border: 1px solid #008080;
+        width: 100%;
+        height: auto;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .buttons-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      .button {
+        background-color: #008080;
+        color: #fff;
+        font-size: 16px;
+        padding: 10px 20px;
+        border: none;
+        margin-right: 10px;
+        cursor: pointer;
+      }
+      .button:hover {
+        background-color: #005f5f;
+      }
+      .label-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      label {
+        font-size: 16px;
+        color: #008080;
+        margin-right: 10px;
+      }
+      input {
+        width: 200px;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #008080;
+      }
+      .success-message {
+        text-align: center;
+        font-size: 18px;
+        color: #008080;
+        margin-top: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Drawing Bounding Boxes on Images</h1>
+    <div class="canvas-wrapper">
+      <canvas id="canvas"></canvas>
+    </div>
+    <div class="buttons-wrapper">
+      <button class="button" onclick="enableDrawing()">Enable Drawing</button>
+      <button class="button" onclick="reset()">Reset</button>
+    </div>
+    <div class="label-wrapper">
+      <label for="label">Label:</label>
+      <input type="text" id="label" name="label">
+    </div>
+    <div class="buttons-wrapper">
+      <button class="button" onclick="saveAnnotations()">Save Annotations</button>
+    </div>
+    <div class="Instructions">
+      Instructions: Enter a label then click Enable drawing. Annotations won't be recorded without a label.
+    </div>
+    <script src="{{ url_for('static', filename='js/ann.js') }}"></script>
+  </body>
+</html>
